@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Reports</h2>
+<form method="get">
+  <label>From <input type="date" name="start" value="{{ start }}"></label>
+  <label>To <input type="date" name="end" value="{{ end }}"></label>
+  <label>Low stock below <input type="number" name="threshold" value="{{ threshold }}" style="width:70px"></label>
+  <button type="submit">Show</button>
+</form>
+
+<h3>Customer Sales Summary (Confirmed orders only)</h3>
+<table border="1" cellpadding="6">
+  <tr><th>Customer</th><th>Email</th><th>Confirmed Orders</th><th>Total Sales</th></tr>
+  {% for c in customer_sales %}
+  <tr><td>{{ c.name }}</td><td>{{ c.email }}</td><td>{{ c.order_count }}</td><td>{{ c.total_sales }}</td></tr>
+  {% endfor %}
+</table>
+
+<h3>Product Sales Summary (Confirmed orders only)</h3>
+<table border="1" cellpadding="6">
+  <tr><th>Code</th><th>Product</th><th>Qty Sold</th><th>Total Amount</th></tr>
+  {% for p in product_sales %}
+  <tr><td>{{ p.product_code }}</td><td>{{ p.name }}</td><td>{{ p.qty_sold }}</td><td>{{ p.total_amount }}</td></tr>
+  {% endfor %}
+</table>
+
+<h3>Low Stock Report (below {{ threshold }})</h3>
+<table border="1" cellpadding="6">
+  <tr><th>Code</th><th>Product</th><th>Stock</th></tr>
+  {% for p in low_stock %}
+  <tr><td>{{ p.product_code }}</td><td>{{ p.name }}</td><td>{{ p.stock_quantity }}</td></tr>
+  {% else %}<tr><td colspan="3">No products below threshold.</td></tr>{% endfor %}
+</table>
+
+<h3>Stock Movement History</h3>
+<table border="1" cellpadding="6">
+  <tr><th>Product</th><th>Type</th><th>Change</th><th>Order</th><th>Reason</th><th>By</th></tr>
+  {% for m in movements %}
+  <tr><td>{{ m.product_code }} - {{ m.product_name }}</td><td>{{ m.movement_type }}</td>
+      <td>{{ m.quantity_change }}</td><td>{{ m.related_order_id or '' }}</td>
+      <td>{{ m.reason }}</td><td>{{ m.created_by_name }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

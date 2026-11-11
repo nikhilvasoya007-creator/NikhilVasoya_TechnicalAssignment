@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Orders</h2>
+<p><a href="/orders/add">+ Create Order</a></p>
+<table border="1" cellpadding="6">
+  <tr><th>Order No</th><th>Customer</th><th>Date</th><th>Status</th><th>Grand Total</th><th>Created By</th><th></th></tr>
+  {% for o in orders %}
+  <tr>
+    <td>{{ o.order_number }}</td><td>{{ o.customer_name }}</td><td>{{ o.order_date }}</td>
+    <td>{{ o.status }}</td><td>{{ o.grand_total }}</td><td>{{ o.created_by_name }}</td>
+    <td><a href="/orders/{{ o.id }}">View</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

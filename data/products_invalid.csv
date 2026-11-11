@@ -1,0 +1,4 @@
+product_code,product_name,category,price,stock_quantity,status
+PRD-201,Speaker,Electronics,1499.00,8,Active
+PRD-001,Duplicate Keyboard,Accessories,1500.00,5,Active
+PRD-202,Bad Price,Electronics,-100.00,5,Active

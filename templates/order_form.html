@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Create Order (Draft)</h2>
+<form method="post" id="orderForm">
+  <label>Customer
+    <select name="customer_id" required>
+      <option value="">-- Choose --</option>
+      {% for c in customers %}<option value="{{ c.id }}">{{ c.name }} ({{ c.city }})</option>{% endfor %}
+    </select>
+  </label><br><br>
+  <label>Discount % <input type="number" step="0.01" min="0" max="20" name="discount_percentage" value="0" id="discount"></label><br><br>
+  <table border="1" cellpadding="6" id="itemsTable">
+    <tr><th>Product</th><th>Price</th><th>Stock</th><th>Qty</th><th>Amount</th><th></th></tr>
+  </table><br>
+  <button type="button" id="addRow">+ Add Item</button><br><br>
+  <p>Subtotal: <span id="subtotal">0.00</span> |
+     Discount: <span id="discAmt">0.00</span> |
+     <strong>Grand Total: <span id="grandTotal">0.00</span></strong></p>
+  <button type="submit" id="submitBtn">Create Draft Order</button>
+  <a href="/orders">Cancel</a>
+</form>
+<script>
+let products = [];
+fetch('/api/products?page=1').then(r => r.json()).then(d => { products = d.products; addRow(); });
+function addRow() {
+  const t = document.getElementById('itemsTable');
+  const row = t.insertRow(-1);
+  const opts = products.map(p => `<option value="${p.id}">${p.product_code} - ${p.name}</option>`).join('');
+  row.innerHTML = `<td><select name="product_id" class="prod">${opts}</select></td>
+    <td class="price"></td><td class="stock"></td>
+    <td><input type="number" name="quantity" min="1" value="1" class="qty" style="width:70px"></td>
+    <td class="amount"></td>
+    <td><button type="button" onclick="this.closest('tr').remove(); recalc();">Remove</button></td>`;
+  row.querySelector('.prod').addEventListener('change', e => fillRow(row));
+  row.querySelector('.qty').addEventListener('input', recalc);
+  fillRow(row);
+}
+function fillRow(row) {
+  const p = products.find(x => x.id == row.querySelector('.prod').value);
+  if (!p) return;
+  row.querySelector('.price').textContent = p.price.toFixed(2);
+  row.querySelector('.stock').textContent = p.stock_quantity;
+  recalc();
+}
+function recalc() {
+  let sub = 0;
+  document.querySelectorAll('#itemsTable tr').forEach((row, i) => {
+    if (i === 0) return;
+    const price = parseFloat(row.querySelector('.price').textContent) || 0;
+    const qty = parseInt(row.querySelector('.qty').value) || 0;
+    const amt = price * qty;
+    row.querySelector('.amount').textContent = amt.toFixed(2);
+    sub += amt;
+  });
+  const discPct = parseFloat(document.getElementById('discount').value) || 0;
+  const disc = sub * discPct / 100;
+  document.getElementById('subtotal').textContent = sub.toFixed(2);
+  document.getElementById('discAmt').textContent = disc.toFixed(2);
+  document.getElementById('grandTotal').textContent = (sub - disc).toFixed(2);
+}
+document.getElementById('addRow').addEventListener('click', addRow);
+document.getElementById('discount').addEventListener('input', recalc);
+document.getElementById('orderForm').addEventListener('submit', e => {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'Creating...';
+  if (!confirm('Create this order as Draft? Stock will NOT be deducted yet.')) { e.preventDefault(); btn.disabled = false; btn.textContent = 'Create Draft Order'; }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ 'Edit Customer' if customer else 'Add Customer' }}</h2>
+<form method="post">
+  <label>Name <input type="text" name="name" value="{{ customer.name if customer else '' }}" required></label><br><br>
+  <label>Email <input type="email" name="email" value="{{ customer.email if customer else '' }}" required></label><br><br>
+  <label>Mobile <input type="text" name="mobile" value="{{ customer.mobile if customer else '' }}"></label><br><br>
+  <label>City <input type="text" name="city" value="{{ customer.city if customer else '' }}"></label><br><br>
+  <button type="submit">Save</button>
+  <a href="/customers">Cancel</a>
+</form>
+{% endblock %}

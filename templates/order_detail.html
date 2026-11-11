@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Order {{ order.order_number }} — {{ order.status }}</h2>
+<p>Customer: {{ customer.name }} | Date: {{ order.order_date }} | Discount: {{ order.discount_percentage }}%</p>
+<table border="1" cellpadding="6">
+  <tr><th>Product</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>
+  {% for i in items %}
+  <tr><td>{{ i.product_code }} - {{ i.product_name }}</td><td>{{ i.quantity }}</td><td>{{ i.rate }}</td><td>{{ i.amount }}</td></tr>
+  {% endfor %}
+</table>
+<p>Subtotal: {{ order.subtotal }} | Discount: {{ order.discount_amount }} | <strong>Grand Total: {{ order.grand_total }}</strong></p>
+{% if order.status == 'Draft' %}
+<form method="post" action="/orders/{{ order.id }}/confirm" style="display:inline"
+      onsubmit="return confirm('Confirm this order? Stock will be deducted.')">
+  <button type="submit">Confirm Order</button>
+</form>
+{% endif %}
+{% if order.status in ['Draft', 'Confirmed'] %}
+<form method="post" action="/orders/{{ order.id }}/cancel" style="display:inline"
+      onsubmit="return confirm('Cancel this order? Confirmed stock will be restored.')">
+  <button type="submit">Cancel Order</button>
+</form>
+{% endif %}
+<h3>Stock Movements</h3>
+<ul>{% for m in movements %}<li>{{ m.movement_type }} {{ m.quantity_change }} — {{ m.reason }}</li>{% else %}<li>None yet (Draft deducts nothing).</li>{% endfor %}</ul>
+<p><a href="/orders">Back to Orders</a></p>
+{% endblock %}

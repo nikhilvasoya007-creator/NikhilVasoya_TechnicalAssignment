@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Import Products (CSV) — Admin only</h2>
+<p>Format: <code>product_code,product_name,category,price,stock_quantity,status</code><br>
+Status must be Active or Inactive. Any invalid row = nothing is imported.</p>
+<form method="post" enctype="multipart/form-data">
+  <input type="file" name="file" accept=".csv" required>
+  <button type="submit">Import</button>
+</form>
+{% if imported is not none %}
+<p style="color:green">Imported {{ imported }} products successfully.</p>
+{% endif %}
+{% if errors %}
+<h3 style="color:red">Import failed — nothing was imported:</h3>
+<ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+{% endif %}
+<p><a href="/products">Back to Products</a></p>
+{% endblock %}

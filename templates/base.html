@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head><title>Savyant Sales Order App</title></head>
+<body>
+ <nav>
+  <a href="/dashboard">Dashboard</a> |
+  <a href="/customers">Customers</a> |
+  <a href="/products">Products</a> |
+  <a href="/orders">Orders</a> |
+  <a href="/reports">Reports</a> |
+  <a href="/logout">Logout ({{ session.get('name', '') }})</a>
+</nav>
+
+
+
+  {% with messages = get_flashed_messages() %}
+    {% for m in messages %}<p style="color:red">{{ m }}</p>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</body>
+</html>

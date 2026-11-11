@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Products</h2>
+<form method="get">
+  <input type="text" name="q" placeholder="Search code or name" value="{{ q }}">
+  <select name="category">
+    <option value="">All Categories</option>
+    {% for c in categories %}
+    <option value="{{ c }}" {{ 'selected' if category == c else '' }}>{{ c }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Search</button>
+</form>
+{% if session.get('role') == 'Admin' %}
+<p><a href="/products/add">+ Add Product</a></p>
+<p><a href="/products/import">Import Products (CSV)</a></p>
+
+{% endif %}
+<table border="1" cellpadding="6">
+  <tr><th>Code</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Active</th><th>Actions</th></tr>
+  {% for p in products %}
+  <tr>
+    <td>{{ p.product_code }}</td><td>{{ p.name }}</td><td>{{ p.category }}</td>
+    <td>{{ p.price }}</td><td>{{ p.stock_quantity }}</td><td>{{ 'Yes' if p.is_active else 'No' }}</td>
+    <td>
+      {% if session.get('role') == 'Admin' %}
+      <a href="/products/{{ p.id }}/edit">Edit</a>
+      <form method="post" action="/products/{{ p.id }}/toggle" style="display:inline">
+        <button type="submit">{{ 'Deactivate' if p.is_active else 'Activate' }}</button>
+      </form>
+      <form method="post" action="/products/{{ p.id }}/delete" style="display:inline"
+            onsubmit="return confirm('Delete this product? Only works if it is not used in any order.')">
+        <button type="submit">Delete</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
